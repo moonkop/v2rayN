@@ -461,5 +461,15 @@ namespace v2rayN.Mode
         /// url
         /// </summary>
         public string url { get; set; }
+
+        /// <summary>
+        ///上次更新时间戳 单位秒
+        /// </summary>
+        public long lastUpdateTime { get; set; }
+
+        /// <summary>
+        /// 更新时间间隔 单位秒
+        /// </summary>
+        public int updateInterval { get; set; }
     }
 }

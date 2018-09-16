@@ -41,9 +41,10 @@ namespace v2rayN.Forms
             lvSubs.MultiSelect = false;
             lvSubs.HeaderStyle = ColumnHeaderStyle.Nonclickable;
 
-            lvSubs.Columns.Add("", 30, HorizontalAlignment.Center);
+            lvSubs.Columns.Add("序号", 30, HorizontalAlignment.Center);
             lvSubs.Columns.Add("备注", 100, HorizontalAlignment.Left);
             lvSubs.Columns.Add("地址", 400, HorizontalAlignment.Left);
+            lvSubs.Columns.Add("更新间隔", 50, HorizontalAlignment.Left);
         }
 
         /// <summary>
@@ -60,7 +61,8 @@ namespace v2rayN.Forms
                 {
                     (k+1).ToString(),
                     item.remarks,
-                    item.url
+                    item.url,
+                    item.updateInterval.ToString()
                 });
                 lvSubs.Items.Add(lvItem);
             }
@@ -151,8 +153,9 @@ namespace v2rayN.Forms
         private void AddSub()
         {
             var subItem = new SubItem();
+            subItem.updateInterval = 0;
             subItem.id =
-            subItem.remarks =
+            subItem.remarks =               
             subItem.url = string.Empty;
             config.subItem.Add(subItem);
         }
@@ -162,6 +165,7 @@ namespace v2rayN.Forms
         {
             if (curItem != null)
             {
+                txtInterval.Text = curItem.updateInterval.ToString();
                 txtRemarks.Text = curItem.remarks.ToString();
                 txtUrl.Text = curItem.url.ToString();
             }
@@ -173,12 +177,29 @@ namespace v2rayN.Forms
             {
                 curItem.remarks = txtRemarks.Text.Trim();
                 curItem.url = txtUrl.Text.Trim();
+                int updateInterval = 0;
+                string txtInterval_text = txtInterval.Text.Trim();
+                if (txtInterval_text != "")
+                {
+                    if (int.TryParse(txtInterval_text, out updateInterval))
+                    {
+                        curItem.updateInterval = updateInterval;
+                    }
+                    else
+                    {
+                        MessageBox.Show("输入更新时间不合法");
+                    }
+                }
+                else
+                {
+                    curItem.updateInterval = 0;
+                }
 
                 RefreshSubsView();
             }
         }
 
-        private void txtRemarks_Leave(object sender, EventArgs e)
+        private void txt_leave(object sender, EventArgs e)
         {
             EndBindingSub();
         }

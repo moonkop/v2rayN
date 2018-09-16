@@ -43,6 +43,7 @@ namespace v2rayN.Handler
         private bool blFirst = true;
         private long totalBytesToReceive = 0;
         private DateTime totalDatetime = new DateTime();
+       
 
         public void AbsoluteV2rayCore(Config config)
         {
@@ -51,6 +52,8 @@ namespace v2rayN.Handler
             WebRequest request = WebRequest.Create(latestUrl);
             request.BeginGetResponse(new AsyncCallback(OnResponse), request);
         }
+
+       
 
         private void OnResponse(IAsyncResult ar)
         {

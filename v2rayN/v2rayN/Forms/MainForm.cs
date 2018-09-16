@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using v2rayN.Handler;
 using v2rayN.HttpProxyHandler;
 using v2rayN.Mode;
+using v2rayN.Tool;
 using System.Collections.Generic;
 using System.IO;
 
@@ -17,6 +18,8 @@ namespace v2rayN.Forms
         private V2rayUpdateHandle v2rayUpdateHandle;
         private V2rayUpdateHandle v2rayUpdateHandle2;
         private List<int> lvSelecteds = new List<int>();
+        private List<System.Timers.Timer> subItemUpdateTimerList = new List<System.Timers.Timer>();
+
 
         #region Window 事件
 
@@ -38,6 +41,8 @@ namespace v2rayN.Forms
             ConfigHandler.LoadConfig(ref config);
             v2rayHandler = new V2rayHandler();
             v2rayHandler.ProcessEvent += v2rayHandler_ProcessEvent;
+            InitSubItemAutoUpdate();
+
         }
 
         private void MainForm_Shown(object sender, EventArgs e)
@@ -70,6 +75,41 @@ namespace v2rayN.Forms
         }
 
         #endregion
+
+        private void InitSubItemAutoUpdate()
+        {
+            foreach (var item in config.subItem)
+            {
+                if (item.updateInterval != 0)
+                {
+                    var url = item.url;
+                    var id = item.id;
+                    //若上次更新时间加更新间隔小于当前时间 则立即更新节点列表
+                    if (item.lastUpdateTime + item.updateInterval * 3600 < Utils.DateTimeToUTCTimeStamp(DateTime.UtcNow))
+                    {
+                        V2rayUpdateHandle subItemUpdateHandle = new V2rayUpdateHandle();
+                        subItemUpdateHandle.UpdateCompleted += (sender, args) =>
+                        {
+                            UpdateSubItem(item);
+                        };
+                        subItemUpdateHandle.WebDownloadString(url);
+                    }
+
+                    System.Timers.Timer timer = new System.Timers.Timer(item.updateInterval * 3600*1000);
+                    timer.Elapsed += (sender, e) =>
+                    {
+                        this.Invoke(new MethodInvoker(() =>
+                        {
+                            UpdateSubItem(item);
+                        }));
+
+                    };
+                    timer.Start();
+                }
+
+            }
+        }
+
 
         #region 显示服务器 listview 和 menu
 
@@ -1210,60 +1250,71 @@ namespace v2rayN.Forms
                 v2rayHandler_ProcessEvent(false, "未设置有效的订阅");
                 return;
             }
-
-            for (int k = 1; k <= config.subItem.Count; k++)
+            foreach (var item in config.subItem)
             {
-                string id = config.subItem[k - 1].id.Trim();
-                string url = config.subItem[k - 1].url.Trim();
-                string hashCode = $"{k}->";
-                if (Utils.IsNullOrEmpty(id) || Utils.IsNullOrEmpty(url))
-                {
-                    v2rayHandler_ProcessEvent(false, $"{hashCode}未设置有效的订阅");
-                    continue;
-                }
+                UpdateSubItem(item);
+            }
+        }
 
-                V2rayUpdateHandle v2rayUpdateHandle3 = new V2rayUpdateHandle();
-                v2rayUpdateHandle3.UpdateCompleted += (sender2, args) =>
+        private void UpdateSubItem(SubItem item)
+        {
+
+            string remark = item.remarks.Trim();
+            string url = item.url.Trim();
+
+            if (Utils.IsNullOrEmpty(remark) || Utils.IsNullOrEmpty(url))
+            {
+                v2rayHandler_ProcessEvent(false, $"{remark}->未设置有效的订阅");
+                return;
+            }
+
+            V2rayUpdateHandle v2rayUpdateHandle3 = new V2rayUpdateHandle();
+            v2rayUpdateHandle3.UpdateCompleted += (sender2, args) =>
+            {
+                if (args.Success)
                 {
-                    if (args.Success)
+                    v2rayHandler_ProcessEvent(false, $"{remark}->获取订阅内容成功");
+                    var result = Utils.Base64Decode(args.Msg);
+                    if (Utils.IsNullOrEmpty(result))
                     {
-                        v2rayHandler_ProcessEvent(false, $"{hashCode}获取订阅内容成功");
-                        var result = Utils.Base64Decode(args.Msg);
-                        if (Utils.IsNullOrEmpty(result))
-                        {
-                            v2rayHandler_ProcessEvent(false, $"{hashCode}订阅内容解码失败(非BASE64码)");
-                            return;
-                        }
+                        v2rayHandler_ProcessEvent(false, $"{remark}->订阅内容解码失败(非BASE64码)");
+                        return;
+                    }
 
-                        ConfigHandler.RemoveServerViaSubid(ref config, id);
-                        v2rayHandler_ProcessEvent(false, $"{hashCode}清除原订阅内容");
-                        RefreshServers();
-                        if (AddBatchServers(result, id) == 0)
-                        {
-                        }
-                        else
-                        {
-                            v2rayHandler_ProcessEvent(false, $"{hashCode}导入订阅内容失败");
-                        }
-                        v2rayHandler_ProcessEvent(false, $"{hashCode}更新订阅结束");
+                    ConfigHandler.RemoveServerViaSubid(ref config, item.id);
+                    v2rayHandler_ProcessEvent(false, $"{remark}->清除原订阅内容");
+                    RefreshServers();
+                    if (AddBatchServers(result, item.id) == 0)
+                    {
                     }
                     else
                     {
-                        v2rayHandler_ProcessEvent(false, args.Msg);
+                        v2rayHandler_ProcessEvent(false, $"{remark}->导入订阅内容失败");
                     }
-                };
-                v2rayUpdateHandle3.Error += (sender2, args) =>
+                    v2rayHandler_ProcessEvent(false, $"{remark}->更新订阅结束");
+                    item.lastUpdateTime = Utils.DateTimeToUTCTimeStamp(DateTime.UtcNow);
+                }
+                else
                 {
-                    v2rayHandler_ProcessEvent(true, args.GetException().Message);
-                };
+                    v2rayHandler_ProcessEvent(false, args.Msg);
+                }
+            };
+            v2rayUpdateHandle3.Error += (sender2, args) =>
+            {
+                v2rayHandler_ProcessEvent(true, args.GetException().Message);
+            };
 
-                v2rayUpdateHandle3.WebDownloadString(url);
-                v2rayHandler_ProcessEvent(false, $"{hashCode}开始获取订阅内容");
-            }
+            v2rayUpdateHandle3.WebDownloadString(url);
+
+            v2rayHandler_ProcessEvent(false, $"{remark}->开始获取订阅内容");
 
 
         }
         #endregion
 
+        private void testToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            InitSubItemAutoUpdate();
+        }
     }
 }

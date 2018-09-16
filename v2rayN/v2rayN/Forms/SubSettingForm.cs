@@ -21,31 +21,17 @@ namespace v2rayN.Forms
             {
                 config.subItem = new List<SubItem>();
             }
-
-            InitSubsView();
             RefreshSubsView();
+
+            if (lvSubs.Items.Count>0)
+            {
+                lvSubs.Items[0].Selected = true;
+
+            }
         }
 
 
-        /// <summary>
-        /// 初始化列表
-        /// </summary>
-        private void InitSubsView()
-        {
-            lvSubs.Items.Clear();
-
-            lvSubs.GridLines = true;
-            lvSubs.FullRowSelect = true;
-            lvSubs.View = View.Details;
-            lvSubs.Scrollable = true;
-            lvSubs.MultiSelect = false;
-            lvSubs.HeaderStyle = ColumnHeaderStyle.Nonclickable;
-
-            lvSubs.Columns.Add("序号", 30, HorizontalAlignment.Center);
-            lvSubs.Columns.Add("备注", 100, HorizontalAlignment.Left);
-            lvSubs.Columns.Add("地址", 400, HorizontalAlignment.Left);
-            lvSubs.Columns.Add("更新间隔", 50, HorizontalAlignment.Left);
-        }
+     
 
         /// <summary>
         /// 刷新列表
@@ -109,16 +95,16 @@ namespace v2rayN.Forms
             }
         }
 
-        private void btnClose_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-        }
 
         private void btnAdd_Click(object sender, EventArgs e)
         {
             AddSub();
 
             RefreshSubsView();
+            lvSubs.Items[lvSubs.Items.Count - 1].Selected = true;
+
+           
+        
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
@@ -153,11 +139,12 @@ namespace v2rayN.Forms
         private void AddSub()
         {
             var subItem = new SubItem();
-            subItem.updateInterval = 0;
+            subItem.updateInterval = 24;
             subItem.id =
             subItem.remarks =               
             subItem.url = string.Empty;
             config.subItem.Add(subItem);
+            
         }
 
 

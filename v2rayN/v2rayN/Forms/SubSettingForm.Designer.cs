@@ -29,12 +29,10 @@
         private void InitializeComponent()
         {
             System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("");
-            this.btnClose = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnRemove = new System.Windows.Forms.Button();
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.lvSubs = new System.Windows.Forms.ListView();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.txtInterval = new System.Windows.Forms.TextBox();
@@ -44,27 +42,19 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.panel3.SuspendLayout();
             this.SuspendLayout();
             // 
-            // btnClose
-            // 
-            this.btnClose.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnClose.Location = new System.Drawing.Point(448, 17);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(75, 23);
-            this.btnClose.TabIndex = 4;
-            this.btnClose.Text = "取消(&C)";
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
             // panel2
             // 
             this.panel2.Controls.Add(this.btnRemove);
             this.panel2.Controls.Add(this.btnAdd);
-            this.panel2.Controls.Add(this.btnClose);
             this.panel2.Controls.Add(this.btnOK);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel2.Location = new System.Drawing.Point(0, 386);
@@ -94,7 +84,7 @@
             // 
             // btnOK
             // 
-            this.btnOK.Location = new System.Drawing.Point(355, 17);
+            this.btnOK.Location = new System.Drawing.Point(468, 17);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 23);
             this.btnOK.TabIndex = 5;
@@ -102,16 +92,13 @@
             this.btnOK.UseVisualStyleBackColor = true;
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
-            // panel1
-            // 
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(0, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(595, 10);
-            this.panel1.TabIndex = 6;
-            // 
             // lvSubs
             // 
+            this.lvSubs.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader2,
+            this.columnHeader3,
+            this.columnHeader4});
             this.lvSubs.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lvSubs.FullRowSelect = true;
             this.lvSubs.GridLines = true;
@@ -122,7 +109,7 @@
             this.lvSubs.MultiSelect = false;
             this.lvSubs.Name = "lvSubs";
             this.lvSubs.ShowGroups = false;
-            this.lvSubs.Size = new System.Drawing.Size(595, 196);
+            this.lvSubs.Size = new System.Drawing.Size(595, 236);
             this.lvSubs.TabIndex = 8;
             this.lvSubs.UseCompatibleStateImageBehavior = false;
             this.lvSubs.View = System.Windows.Forms.View.Details;
@@ -137,9 +124,9 @@
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.label3);
             this.groupBox2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBox2.Location = new System.Drawing.Point(0, 196);
+            this.groupBox2.Location = new System.Drawing.Point(0, 236);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(595, 180);
+            this.groupBox2.Size = new System.Drawing.Size(595, 150);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "订阅详情";
@@ -150,7 +137,7 @@
             this.txtInterval.Name = "txtInterval";
             this.txtInterval.Size = new System.Drawing.Size(63, 21);
             this.txtInterval.TabIndex = 25;
-            this.txtInterval.Leave+= new System.EventHandler(this.txt_leave);
+            this.txtInterval.Leave += new System.EventHandler(this.txt_leave);
             // 
             // label1
             // 
@@ -186,7 +173,6 @@
             this.label2.Size = new System.Drawing.Size(83, 12);
             this.label2.TabIndex = 10;
             this.label2.Text = "备注(remarks)";
-            
             // 
             // label3
             // 
@@ -202,20 +188,37 @@
             this.panel3.Controls.Add(this.lvSubs);
             this.panel3.Controls.Add(this.groupBox2);
             this.panel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel3.Location = new System.Drawing.Point(0, 10);
+            this.panel3.Location = new System.Drawing.Point(0, 0);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(595, 376);
+            this.panel3.Size = new System.Drawing.Size(595, 386);
             this.panel3.TabIndex = 10;
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "序号";
+            this.columnHeader1.Width = 45;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "备注";
+            this.columnHeader2.Width = 100;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "url";
+            this.columnHeader3.Width = 385;
+            // 
+            // columnHeader4
+            // 
+            this.columnHeader4.Text = "更新间隔";
             // 
             // SubSettingForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.btnClose;
             this.ClientSize = new System.Drawing.Size(595, 440);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "SubSettingForm";
             this.Text = "订阅设置";
@@ -229,9 +232,7 @@
         }
 
         #endregion
-        private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnOK;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.ListView lvSubs;
         private System.Windows.Forms.Button btnRemove;
@@ -244,5 +245,9 @@
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.TextBox txtInterval;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
     }
 }
